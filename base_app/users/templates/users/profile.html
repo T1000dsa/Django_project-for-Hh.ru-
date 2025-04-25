@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+{% if user.photo %}
+<br><img src="{{ user.photo.url }}"  width="200" height="200">
+{% else %}
+<br><img src="{{ default_image }}"  width="200" height="200">
+{% endif %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-error">{{ form.non_fields_errors }}</div>
+    {% for f in form %}
+    <p><label class="form-label" for="{{ f.id_for_label }}">{{ f.label  }}</label>{{ f }}</p>
+    <div class="form-error">{{ f.errors }}</div>
+    {% endfor %}
+    <p><button type="submit">Подтвердить</button>
+</form>
+<hr>
+<a href="{% url 'users:password_change' %}">Сменить пароль</a>
+{% endblock %}

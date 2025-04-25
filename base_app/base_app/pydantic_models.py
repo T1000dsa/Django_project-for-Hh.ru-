@@ -34,8 +34,6 @@ class DatabaseConfig(BaseModel):
     host: str = 'localhost'
     port: int = 5432
 
-    client_encoding: str = 'utf-8'  # Add this
-
     def give_url(self):
         if self.url is None:
             self.url = f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
@@ -46,10 +44,22 @@ class DatabaseConfig(BaseModel):
     @property
     def connection_params(self):
         return {
-            'dbname': self.name,
-            'user': self.user,
-            'password': self.password,
-            'host': self.host,
-            'port': self.port,
-            'client_encoding': self.client_encoding
+            'ENGINE': self.engine,
+            'NAME': self.name,
+            'USER': self.user,
+            'PASSWORD': self.password,
+            'HOST': self.host,
+            'PORT': self.port,
             }
+    
+    def __str__(self):
+        return ', '.join(f'{key}={value}' for key, value in self.connection_params.items() if key != 'PASSWORD')
+    
+    
+class Email_Settings(BaseModel):
+    email:str
+    email_host:str
+    email_port:int
+    email_host_user:str=''
+    email_password:str
+    email_use_ssl:bool = True

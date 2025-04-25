@@ -1,0 +1,5 @@
+{% for item in menu %}
+    <nav><a href="{% url item.url_name %}">{{ item.title|capfirst }}</a></nav>
+{% endfor %}
+
+<nav><a href="https://github.com/T1000dsa">My GitHub</a></nav>

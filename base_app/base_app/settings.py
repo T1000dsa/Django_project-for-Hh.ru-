@@ -10,11 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 # python base_app/manage.py runserver
-from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from .pydantic_models import RunConfig, DatabaseConfig, SecretKey, Mode
+from pathlib import Path
+import os
 import logging
 
+from base_app.pydantic_models import RunConfig, DatabaseConfig, SecretKey, Mode, Email_Settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +35,9 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     db: DatabaseConfig
     mode:Mode
+    email:Email_Settings
     #redis_settings: RedisSettings = RedisSettings()
     #redis_cache: RedisCache = RedisCache()
-    #email:Email_Settings = Email_Settings()
 
 settings = Settings()
 # Check environment (better than assert)
@@ -47,7 +48,9 @@ else:
     DEBUG = False
 
 
-logger.debug(settings)
+logger.debug(settings.db)
+logger.debug(settings.run)
+logger.debug(settings.mode)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -61,7 +64,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = settings.key.key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
 
 ALLOWED_HOSTS = [
     '127.0.0.1'
@@ -82,7 +85,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'ads.apps.AdsConfig'
+    'ads.apps.AdsConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -122,10 +126,6 @@ WSGI_APPLICATION = 'base_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': settings.db.engine,
-        'OPTIONS': {
-            'options': '-c client_encoding=utf8',
-        },
         **settings.db.connection_params
     }
 }
@@ -165,9 +165,36 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+DEFAULT_USER_IMAGE = MEDIA_URL + 'photos/none_image/None.png'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = 'home_page'
+LOGOUT_REDIRECT_URL = 'home_page'
+LOGIN_URL = 'users:login'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_FILE_PATH = "/tmp/app-messages"  # change this to a proper location
+
+EMAIL_HOST = settings.email.email_host
+EMAIL_PORT = settings.email.email_port
+EMAIL_HOST_USER = settings.email.email_host_user
+EMAIL_HOST_PASSWORD = settings.email.email_password
+EMAIL_USE_SSL = settings.email.email_use_ssl
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'users.authentication.EmailAuthBackend'
+]

@@ -1,20 +1,21 @@
-#menu = [{'title':'about site', 'url_name':'about'}, 
-        #{'title':'sign in', 'url_name':'autorise'},
-        #{'title':'sign up', 'url_name':'register'},
-        #{'title':'add book', 'url_name':'add'},
-        #{'title':'get book', 'url_name':'get_books'},
-        #]
-
 class DataMixin:
     title_page = None
-    
-    extra_context  = {}
-    
-    def __init__(self):
-        if self.title_page:
-            self.extra_context['title'] = self.title_page
+    extra_context = {}
 
+    menu = [
+        {'title':'Главная', 'url_name':'home_page'},
+        ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)  # Get parent context
+        context['menu'] = self.menu  # Inject menu
+        if self.title_page:
+            context['title'] = self.title_page
+        context.update(self.extra_context)  # Add extra_context
+        return context
+    
     def get_mixin_context(self, context:dict, **kwargs):
-        #context['menu'] = menu
+        context['menu'] = self.menu
+        context['cat_selected'] = None
         context.update(kwargs)
         return context
