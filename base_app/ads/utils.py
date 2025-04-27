@@ -4,6 +4,8 @@ class DataMixin:
 
     menu = [
         {'title':'Главная', 'url_name':'home_page'},
+        {'title':'Добавить Объявление', 'url_name':'create_ad'},
+        {'title':'Смотреть Объявления', 'url_name':'show_ads'},
         ]
 
     def get_context_data(self, **kwargs):
@@ -16,6 +18,5 @@ class DataMixin:
     
     def get_mixin_context(self, context:dict, **kwargs):
         context['menu'] = self.menu
-        context['cat_selected'] = None
         context.update(kwargs)
         return context

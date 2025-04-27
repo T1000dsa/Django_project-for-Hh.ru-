@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+<title>{{ title|default:'without title'|capfirst }}</title>
+{% block content %}
+<h1>{{title}}</h1>
+
+{% if form %}
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <h4>Предложение обмена</h4>
+            <p>Ваше объявление: {{ ad_sender.title }}</p>
+            <p>Предлагаете обмен на: {{ ad_receiver.title }}</p>
+        </div>
+        
+        {{ form.comment }}
+        
+        <br><button type="submit">Отправить предложение</button>
+    </form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+<title>{{ title|default:'without title'|capfirst }}</title>
+
+{% block content %}
+<h1>{{ title|default:'Error!'|capfirst }}</h1>
+{{ description }}
+{% if index_list %}
+<nav>
+    {% for item in index_list %}
+        <br>{{ item.title }}
+        <br><em>{{ item.description }}</em>
+        {% if item.image_url %}
+            <br><img src="{{ item.image_url }}"  width="100" height="100">
+        {% endif %}
+        <br><a href="{{ item.get_pk }}">Смотреть Объявление</a><br>
+    {% endfor %}
+</nav>
+{% endif %}
+{% endblock %}

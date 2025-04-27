@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+<title>{{ title|default:'without title'|capfirst }}</title>
+
+{% block content %}
+<h1>{{ object.title|default:'Error!'|capfirst }}</h1>
+{% if current_user %}
+    {% if object.user.pk == current_user %}
+        <a href="{{ object.get_to_update }}">Редактировать Объявление</a><br>
+
+        <a href="{{ object.get_to_delete }}">Удалить Объявление</a><br>
+    {% endif %}
+{% endif %}
+
+{{object.user.pk}}
+{{current_user.user.pk}}
+
+{% if object.user.pk != current_user.user.pk %}
+<a href="{{ object|get_exchange:current_user.user.pk }}">Предложить обмен</a><br>
+{% endif %}
+
+{{ object.description }}<br>
+
+{% if object.image_url %}
+    <img src="{{ object.image_url }}" width="100" height="100">
+{% else %}
+
+{% endif %}
+
+<br>Категория: {{object.category}}<br>
+
+{{object.created_at}}<br>
+
+{% endblock %}

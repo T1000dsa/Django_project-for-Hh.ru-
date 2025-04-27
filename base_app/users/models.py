@@ -9,6 +9,5 @@ class User(AbstractUser):
         upload_to='users/%Y/%m/%d', 
         blank=True, 
         null=True, 
-        verbose_name='Photo', 
-        default=DEFAULT_USER_IMAGE)
+        verbose_name='Photo')
     date_birth = models.DateField(blank=True, null=True, verbose_name='Birthday')
