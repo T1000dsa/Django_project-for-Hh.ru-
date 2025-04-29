@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="barter-detail">
+    <h3>Предложение обмена от {{proposal.ad_sender.user.username}}</h3>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Ваш предмет</div>
+                <div class="card-body">
+                    <h5>{{ proposal.ad_receiver.title }}</h5>
+                    <p>{{ proposal.ad_receiver.description }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Предложенный предмет</div>
+                <div class="card-body">
+                    <h5>{{ proposal.ad_sender.title }}</h5>
+                    <p>{{ proposal.ad_sender.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Сообщение</h4>
+        <p>{{ proposal.comment }}</p>
+    </div>
+
+    {% if proposal.status == 'pending' and request.user == proposal.ad_receiver.user %}
+        <div class="actions">
+            <form method="post" action="{% url 'accept_proposal' proposal.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Принять</button>
+            </form>
+            <form method="post" action="{% url 'reject_proposal' proposal.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Отклонить</button>
+            </form>
+        </div>
+    {% endif %}
+
+    {% if proposal.status == 'accepted' %}
+        <div class="alert alert-success">
+            This proposal has been accepted
+        </div>
+    {% elif proposal.status == 'rejected' %}
+        <div class="alert alert-danger">
+            This proposal has been rejected
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

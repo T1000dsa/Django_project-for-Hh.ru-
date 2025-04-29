@@ -1,14 +1,16 @@
-from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
+import logging
 
 import base_app.settings as sett 
 from .forms import LoginUserForm, RegisterUserForm, ProfileUserForm, UserPasswordForm
 from ads.utils import DataMixin
+
+logger = logging.getLogger(__name__)
 
 class UserLogin(DataMixin, LoginView):
     form_class = LoginUserForm
@@ -38,8 +40,17 @@ class ProfileUser(DataMixin, LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('users:profile')
     
-    def get_object(self, queryset = None):
+    def get_object(self):
         return self.request.user
+    
+    def form_valid(self, form):
+
+        selected_message = form.cleaned_data.get('message')
+        logger.debug(f'{selected_message}')
+        if selected_message:
+            return redirect('proposal_detail', pk=selected_message.pk)
+        return super().form_valid(form)
+    
     
 class UserPassChange(DataMixin, LoginRequiredMixin, PasswordChangeView):
     form_class = UserPasswordForm

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 <title>{{ title|default:'without title'|capfirst }}</title>
 {% block content %}
-<h1>Book Edit</h1>
+<h1>{{title}}</h1>
 {{ description }}
 {% if form %}
     <form actions="" method="POST" enctype="multipart/form-data">

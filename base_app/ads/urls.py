@@ -15,5 +15,9 @@ urlpatterns = [
     path('exchange/<int:ad_sender_id>/to/<int:ad_receiver_id>/', 
          views.CreateExchange.as_view(), 
          name='create_exchange'),
+    path('proposal/<int:pk>/', views.ProposalDetailView.as_view(), name='proposal_detail'),
+
+    path('proposal/<int:pk>/accept/', views.accept_proposal, name='accept_proposal'),
+    path('proposal/<int:pk>/reject/', views.reject_proposal, name='reject_proposal'),
 
 ]

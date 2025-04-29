@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
-
 class Ad(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
@@ -43,12 +42,11 @@ class Ad(models.Model):
     
     def get_exchange(self, sender_ad_id):
         """Generate proper exchange URL between two ads"""
-        logger.debug(f'{self.user.pk}, {sender_ad_id}')
+        logger.debug(f'ad_sender_id: {sender_ad_id} ad_receiver_id: {self.id}')
         return reverse('create_exchange', kwargs={
             'ad_sender_id': sender_ad_id, # User id
             'ad_receiver_id': self.id # Ad id
         }) 
-
 
 
 class ExchangeProposal(models.Model):
@@ -78,7 +76,24 @@ class ExchangeProposal(models.Model):
 
     def __str__(self):
         return f"Proposal from {self.ad_sender} to {self.ad_receiver}"
+    
+    def get_accept_url(self):
+        
+        if self.status != 'pending':
+            raise ValueError("Only pending proposals can be accepted")
+        
+        self.status = 'accepted'
+        self.save()
+        return reverse('accept_proposal', kwargs={'pk': self.pk})
+
+    def get_reject_url(self):
+
+        if self.status != 'pending':
+            raise ValueError("Only pending proposals can be rejected")
+        
+        self.status = 'rejected'
+        self.save()
+        return reverse('reject_proposal', kwargs={'pk': self.pk})
 
     class Meta:
         unique_together = ('ad_sender', 'ad_receiver')
-

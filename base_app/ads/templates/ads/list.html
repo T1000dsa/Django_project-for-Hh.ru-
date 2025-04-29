@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="get" action="">
+    <input type="text" name="q" placeholder="Search..." value="{{ query }}">
+    <button type="submit">Search</button>
+  </form>
+  {% for ad in ads %}
+    <h3>{{ ad.title }}</h3>
+    <p>{{ ad.description }}</p>
+  {% endfor %}
+{% endblock %}

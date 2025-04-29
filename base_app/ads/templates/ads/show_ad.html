@@ -4,16 +4,14 @@
 
 {% block content %}
 <h1>{{ object.title|default:'Error!'|capfirst }}</h1>
+
 {% if current_user %}
-    {% if object.user.pk == current_user %}
+    {% if object.user.pk == current_user.user.pk %}
         <a href="{{ object.get_to_update }}">Редактировать Объявление</a><br>
 
         <a href="{{ object.get_to_delete }}">Удалить Объявление</a><br>
     {% endif %}
 {% endif %}
-
-{{object.user.pk}}
-{{current_user.user.pk}}
 
 {% if object.user.pk != current_user.user.pk %}
 <a href="{{ object|get_exchange:current_user.user.pk }}">Предложить обмен</a><br>

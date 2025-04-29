@@ -3,6 +3,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from datetime import datetime, date, timedelta
+from ads.models import ExchangeProposal
+from django.db import models
 
 class LoginUserForm(AuthenticationForm):
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class':'form-input'}))
@@ -50,14 +52,33 @@ class ProfileUserForm(forms.ModelForm):
                                       )
         )
     
+    
+    message = forms.ModelChoiceField(
+        queryset=ExchangeProposal.objects.none(),
+        label='Сообщения',
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'email', 'photo', 'date_birth'] # , 'photo', 'date_birth'
+        fields = ['first_name', 'email', 'photo', 'date_birth']
 
         widgets = {
             'first_name':forms.TextInput(attrs={'class':'form-input'}),
             'email':forms.TextInput(attrs={'class':'form-input'}),
             }
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.get('instance')
+        super().__init__(*args, **kwargs)
+        
+        if user and user.pk:
+            self.fields['message'].queryset = ExchangeProposal.objects.filter(
+                models.Q(ad_receiver__user=user)
+            ).order_by('-created_at')
+            
         
 
 class UserPasswordForm(PasswordChangeForm):
